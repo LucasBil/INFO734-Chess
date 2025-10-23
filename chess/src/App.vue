@@ -1,7 +1,9 @@
 <script setup>
   import HeaderComponent from './components/HeaderComponent.vue'
   import FooterComponent from '@/components/FooterComponent.vue'
-  import { RouterView } from 'vue-router'
+  import { RouterView, useRoute } from 'vue-router'
+
+  const route = useRoute();
 </script>
 
 <template>
@@ -9,5 +11,5 @@
   <main class="grow flex flex-col">
     <RouterView />
   </main>
-  <FooterComponent />
+  <FooterComponent v-if="route.name !== 'game'" />
 </template>
