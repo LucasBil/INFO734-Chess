@@ -4,9 +4,9 @@ services:
     container_name: websocket
     working_dir: /usr/src/websocket-server
     environment:
-      - MODE=${MODE}
+      - MODE=${MODE:-development}
     ports:
-      - "${PORT_WEBSOCKET}:8080"
+      - "${PORT_WEBSOCKET:-8081}:8080"
     volumes:
       - ./websocket:/usr/src/websocket-server
     command: bash -c "
@@ -17,11 +17,56 @@ services:
     container_name: frontend
     working_dir: /var/www
     environment:
-      - MODE=${MODE}
+      - MODE=${MODE:-development}
+      - BACKEND_PORT=3000
     ports:
-      - "${PORT_FRONTEND}:5173"
+      - "${PORT_FRONTEND:-8080}:5173"
     volumes:
       - ./chess:/var/www
     command: bash -c "
       npm install &&
       npm run dev"
+    depends_on:
+      - backend
+  backend:
+    image: node:lts-jod
+    container_name: backend
+    working_dir: /usr/src/www
+    environment:
+      - MODE=${MODE:-development}
+      - BDD_URI=mongodb://${BDD_USERNAME:-root}:${BDD_PASSWORD:-root}@mongo:27017/${BDD_NAME:-app}?authSource=admin
+    ports:
+      - "${PORT_BACKEND:-3000}:3000"
+    volumes:
+      - ./backend:/usr/src/www
+    depends_on:
+      - mongo
+    command: ["npm", "run", "dev"]
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    volumes:
+      - ./mongo/db:/data/db
+      - ./mongo/init:/docker-entrypoint-initdb.d
+    ports:
+      - "${PORT_BDD:-27017}:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${BDD_USERNAME:-root}
+      - MONGO_INITDB_ROOT_PASSWORD=${BDD_PASSWORD:-root}
+      - MONGO_INITDB_DATABASE=${BDD_NAME:-app}
+    command: 
+      - --bind_ip_all
+      - --auth
+  mongo-express:
+    image: mongo-express:1.0
+    container_name: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://${BDD_USERNAME:-root}:${BDD_PASSWORD:-root}@mongo:27017/${BDD_NAME:-app}?authSource=admin
+      - ME_CONFIG_BASICAUTH_USERNAME=${BDD_USERNAME:-root}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${BDD_PASSWORD:-root}
+      - ME_CONFIG_BASICAUTH_ENABLED=false
+    ports:
+      - "${PORT_MONGOEXPRESS:-8083}:8081"
+    depends_on:
+      - mongo
+    restart: unless-stopped
