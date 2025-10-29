@@ -1,4 +1,20 @@
 <script setup>
+    import { ref } from 'vue';
+    import { useRouter } from 'vue-router';
+    import { useProfileStore } from '@/stores/profile';
+
+    const profileStore = useProfileStore();
+    const router = useRouter();
+
+    let email = ref(null);
+    let password = ref(null);
+
+    function submit() {
+        if (email.value != null && password.value != null){
+            profileStore.login(email.value, password.value);
+            router.push({ name: 'home'});
+        }
+    }
 </script>
 
 <template>
@@ -8,11 +24,11 @@
                 <div class="card-body">
                     <fieldset class="fieldset">
                         <label class="label">Email</label>
-                        <input type="email" class="input" placeholder="Email" />
+                        <input v-model="email" type="email" class="input" placeholder="Email" />
                         <label class="label">Password</label>
-                        <input type="password" class="input" placeholder="Password" />
+                        <input v-model="password" type="password" class="input" placeholder="Password" />
                         <div><a class="link link-hover">Forgot password?</a></div>
-                        <button class="btn btn-neutral mt-4">Login</button>
+                        <button @click="submit" class="btn btn-neutral mt-4">Login</button>
                     </fieldset>
                 </div>
             </div>

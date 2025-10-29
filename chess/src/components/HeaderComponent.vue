@@ -1,5 +1,19 @@
 <script setup>
-    import { RouterLink } from 'vue-router';
+    import { useRouter, RouterLink } from 'vue-router';
+    import AvatarComponent from '@/components/AvatarComponent.vue';
+    import { useProfileStore } from '@/stores/profile';
+    import { computed } from 'vue'
+
+    const router = useRouter();
+    const profileStore = useProfileStore();
+
+    const profile = computed(() => profileStore.profile)
+    const isLogged = computed(() => profileStore.isLoggedIn)
+
+    const logout = () => {
+        profileStore.logout();
+        router.push({ name: 'home'});
+    }
 </script>
 
 <template>
@@ -26,8 +40,13 @@
         <div class="flex-1">
             <router-link :to="{ name: 'home' }" class="text-xl font-medium">chess.com</router-link>
         </div>
-        <div class="flex-none">
-            <router-link :to="{ name: 'login' }" class="btn btn-ghost">Login</router-link>
+        <div class="flex gap-2 items-center">
+            <router-link v-if="isLogged" :to="{ name : 'profile' }" class="flex items-center gap-2">
+                <AvatarComponent :status="true" :avatar-url="profile.avatar"/>
+                <div class="hidden md:block">{{ profile.profilename }}</div>
+            </router-link>
+            <router-link v-if="!isLogged" :to="{ name: 'login' }" class="btn btn-ghost">Login</router-link>
+            <button v-else @click="logout" class="btn btn-ghost">Logout</button>
         </div>
     </div>
 </template>
