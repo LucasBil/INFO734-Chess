@@ -93,16 +93,9 @@
         });
 
         board.value.addEventListener('snap-end', () => {
-            if (game.isGameOver()) {
-                const reason = game.isCheckmate() ? 'checkmate'
-                                : game.isDraw() ? 'draw'
-                                : 'unknown';
-                const winner = game.isCheckmate()
-                                    ? game.turn() === Pieces.WHITE ? Pieces.BLACK : Pieces.WHITE
-                                    : null;
-                emit('end', { winner, reason, fen : game.fen() })
-            }
             board.value.setPosition(game.fen());
+            if (game.isGameOver())
+                emitGameOver(game)
 
             if (props.bot)
                 botMove(props.bot);
@@ -132,6 +125,8 @@
         game.move(move);
         board.value.setPosition(game.fen());
         emit('move', { move, fen: game.fen()});
+        if (game.isGameOver())
+            emitGameOver(game)
     }
 
     function playMove(from, to, promotion=null) {
@@ -155,6 +150,16 @@
             background-color: ${highlightColor};
         }
         `;
+    }
+
+    function emitGameOver(_game) {
+        const reason = _game.isCheckmate() ? 'checkmate'
+                            : _game.isDraw() ? 'draw'
+                            : 'unknown';
+        const winner = _game.isCheckmate()
+                            ? _game.turn() === Pieces.WHITE ? Pieces.BLACK : Pieces.WHITE
+                            : null;
+        emit('end', { winner, reason, fen : _game.fen() })
     }
 </script>
 
