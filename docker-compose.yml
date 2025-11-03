@@ -23,11 +23,9 @@ services:
       - "${PORT_FRONTEND:-8080}:5173"
     volumes:
       - ./chess:/var/www
-    command: bash -c "
-      npm install &&
-      npm run dev"
     depends_on:
       - backend
+    tty: true
   backend:
     image: node:lts-jod
     container_name: backend
