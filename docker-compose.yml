@@ -59,16 +59,3 @@ services:
     command: 
       - --bind_ip_all
       - --auth
-  mongo-express:
-    image: mongo-express:1.0
-    container_name: mongo-express
-    environment:
-      - ME_CONFIG_MONGODB_URL=mongodb://${BDD_USERNAME:-root}:${BDD_PASSWORD:-root}@mongo:27017/${BDD_NAME:-app}?authSource=admin
-      - ME_CONFIG_BASICAUTH_USERNAME=${BDD_USERNAME:-root}
-      - ME_CONFIG_BASICAUTH_PASSWORD=${BDD_PASSWORD:-root}
-      - ME_CONFIG_BASICAUTH_ENABLED=false
-    ports:
-      - "${PORT_MONGOEXPRESS:-8083}:8081"
-    depends_on:
-      - mongo
-    restart: unless-stopped

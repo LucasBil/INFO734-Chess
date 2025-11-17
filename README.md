@@ -122,6 +122,9 @@ BDD_PASSWORD=admin
 ```
 Les ports et identifiants sont configurables via ce fichier.
 
+Chaine de connection :
+> mongodb://${BDD_USERNAME:-root}:${BDD_PASSWORD:-root}@localhost:27017/${BDD_NAME:-app}?authSource=admin
+
 ### Remarques
 
 Le dossier mongo/db contient les fichiers de la base de données. Supprimer ces fichiers réinitialise la BDD.
