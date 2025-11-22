@@ -33,6 +33,10 @@ services:
     environment:
       - MODE=${MODE:-development}
       - BDD_URI=mongodb://${BDD_USERNAME:-root}:${BDD_PASSWORD:-root}@mongo:27017/${BDD_NAME:-app}?authSource=admin
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-jwt_secret}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-jwt_refresh}
+      - ACCESS_TOKEN_EXPIRES=${ACCESS_TOKEN_EXPIRES:-15m}
+      - REFRESH_TOKEN_EXPIRES=${REFRESH_TOKEN_EXPIRES:-7d}
     ports:
       - "${PORT_BACKEND:-3000}:3000"
     volumes:

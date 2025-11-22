@@ -31,7 +31,6 @@ L'application est un **site de jeu d'échecs en ligne** avec :
 - Express.js  
 - WebSocket (Node.js)  
 - MongoDB 6.0  
-- mongo-express  
 - Docker & docker-compose  
 - JavaScript, HTML, CSS  
 
@@ -115,6 +114,11 @@ PORT_FRONTEND=8080
 PORT_BACKEND=3000
 PORT_MONGOEXPRESS=8083
 PORT_BDD=27017
+
+JWT_ACCESS_SECRET=your_jwt_access_secret
+JWT_REFRESH_SECRET=your_jwt_refresh_secret
+ACCESS_TOKEN_EXPIRES=15m
+REFRESH_TOKEN_EXPIRES=7d
 
 BDD_NAME=chess
 BDD_USERNAME=admin
