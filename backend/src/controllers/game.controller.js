@@ -18,6 +18,37 @@ export const getAll = async (req, res) => {
   }
 };
 
+export const getGamesByPlayerController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const games = await GameService.getGamesByPlayer(userId);
+    res.json(games);
+  } catch (error) {
+    console.error("Error fetching games by player:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export const fetchGamesByWhite = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const games = await getAllGamesByWhite(userId);
+    res.json(games);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const fetchGamesByBlack = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const games = await getAllGamesByBlack(userId);
+    res.json(games);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export const getOne = async (req, res) => {
   try {
     const game = await GameService.getGameById(req.params.id);

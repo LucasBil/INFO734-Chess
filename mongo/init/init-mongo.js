@@ -34,7 +34,6 @@ db.createUser({
 // Créer des collections initiales
 db.createCollection('users');
 db.createCollection('games');
-db.createCollection('moves');
 
 print('=== Database initialized successfully ===');
 print('Database: ' + databaseName);

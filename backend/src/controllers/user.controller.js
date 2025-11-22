@@ -1,5 +1,9 @@
 import {
   getAllUsers,
+  searchByEmail,
+  searchByUsername,
+  findByEmail,
+  findByUsername,
   getUserById,
   updateUserById,
   deleteUserById,
@@ -8,6 +12,54 @@ import {
 export const getAll = async (req, res) => {
   const users = await getAllUsers();
   res.status(200).json(users);
+};
+
+export const getUsersByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const users = await searchByUsername(username);
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getUsersByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const users = await searchByEmail(email);
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await findByUsername(username);
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const user = await findByEmail(email);
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 export const getOne = async (req, res) => {

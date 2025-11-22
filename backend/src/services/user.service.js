@@ -5,6 +5,24 @@ export const getAllUsers = () => {
   return User.find().select("-password -refreshTokens");
 };
 
+export const searchByUsername = async (username) => {
+  const regex = new RegExp(username, "i"); // i = insensitive
+  return await User.find({ username: regex }).select("-password -refreshTokens");
+};
+
+export const searchByEmail = async (email) => {
+  const regex = new RegExp(email, "i");
+  return await User.find({ email: regex }).select("-password -refreshTokens");
+};
+
+export const findByUsername = async (username) => {
+  return await User.findOne({ username }).select("-password -refreshTokens");
+};
+
+export const findByEmail = async (email) => {
+  return await User.findOne({ email }).select("-password -refreshTokens");
+};
+
 export const getUserById = (id) => {
   return User.findById(id).select("-password -refreshTokens");
 };

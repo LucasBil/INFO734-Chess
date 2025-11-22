@@ -8,6 +8,27 @@ export const getAllGames = async () => {
   return await Game.find().populate("white black", "username email role");
 };
 
+export const getGamesByPlayer = async (userId) => {
+  return await Game.find({
+    $or: [
+      { white: userId },
+      { black: userId }
+    ]
+  }).populate("white black", "username email");
+}
+
+export const getAllGamesByWhite = async (userId) => {
+  return await Game.find({ white: userId })
+    .populate("white", "username email")
+    .populate("black", "username email");
+};
+
+export const getAllGamesByBlack = async (userId) => {
+  return await Game.find({ black: userId })
+    .populate("white", "username email")
+    .populate("black", "username email");
+};
+
 export const getGameById = async (id) => {
   return await Game.findById(id).populate("white black", "username email role");
 };

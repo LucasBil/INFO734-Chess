@@ -4,6 +4,9 @@ import { authenticate, adminOnly  } from "../middleware/auth.middleware.js";
 import {
   create,
   getAll,
+  getGamesByPlayerController,
+  fetchGamesByBlack,
+  fetchGamesByWhite,
   getOne,
   update,
   deleteOne,
@@ -84,6 +87,122 @@ const router = express.Router();
  *                 $ref: "#/components/schemas/Game"
  */
 router.get("/", getAll);
+
+/**
+ * @swagger
+ * /games/player/{userId}:
+ *   get:
+ *     summary: Get all games where the user is involved (white or black)
+ *     tags: [Games]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: List of games where the user appears
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   sessionId:
+ *                     type: string
+ *                   white:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       username:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                   black:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       username:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                   moves:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         fen:
+ *                           type: string
+ *                         date:
+ *                           type: string
+ *                           format: date-time
+ *                   result:
+ *                     type: string
+ *                     enum: [white, black, draw]
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/player/:userId", getGamesByPlayerController);
+
+/**
+ * @swagger
+ * /games/white/{userId}:
+ *   get:
+ *     tags: [Games]
+ *     summary: Get all games where the user played as white
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "67a4e8b2c1d54a1e23456789"
+ *     responses:
+ *       200:
+ *         description: List of games where the user was white
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/Game"
+ */
+router.get("/white/:userId", fetchGamesByWhite);
+
+/**
+ * @swagger
+ * /games/black/{userId}:
+ *   get:
+ *     tags: [Games]
+ *     summary: Get all games where the user played as black
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "67a4e8b2c1d54a1e23456789"
+ *     responses:
+ *       200:
+ *         description: List of games where the user was black
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/Game"
+ */
+router.get("/black/:userId", fetchGamesByBlack);
 
 /**
  * @swagger

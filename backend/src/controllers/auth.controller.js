@@ -27,12 +27,10 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { identifier, password } = req.body;
-    console.log(identifier, password);
     const user = await findUserByCredentials(identifier, password);
-    console.log(user);
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
-    const payload = { sub: user._id, username: user.username };
+    const payload = { sub: user._id, username: user.username, email: user.email, role: user.role };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
@@ -61,7 +59,7 @@ export const refresh = async (req, res) => {
       const user = await findUserByRefreshToken(token);
       if (!user) return res.status(401).json({ error: "Token revoked" });
 
-      const payload = { sub: decoded.sub, username: decoded.username };
+      const payload = { sub: decoded.sub, username: decoded.username, email: decoded.email, role: decoded.role };
       const accessToken = generateAccessToken(payload);
       res.json({ accessToken, expiresIn: ACCESS_EXPIRES });
     });

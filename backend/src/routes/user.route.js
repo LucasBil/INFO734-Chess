@@ -1,6 +1,10 @@
 import express from "express";
 import {
   getAll,
+  getUsersByUsername,
+  getUsersByEmail,
+  getByUsername,
+  getByEmail,
   getOne,
   update,
   deleteMe,
@@ -45,6 +49,105 @@ const router = express.Router();
  *                     format: date-time
  */
 router.get("/", getAll);
+
+/**
+ * @swagger
+ * /users/usernames/{username}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Search users by partial username (LIKE search)
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "lu"
+ *     responses:
+ *       200:
+ *         description: List of matching users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/User"
+ */
+router.get("/usernames/:username", getUsersByUsername);
+
+/**
+ * @swagger
+ * /users/emails/{email}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Search users by partial email (LIKE search)
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "@gmail"
+ *     responses:
+ *       200:
+ *         description: List of matching users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/User"
+ */
+router.get("/emails/:email", getUsersByEmail);
+
+/**
+ * @swagger
+ * /users/username/{username}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get a user by username
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/User"
+ *       404:
+ *         description: User not found
+ */
+router.get("/username/:username", getByUsername);
+
+/**
+ * @swagger
+ * /users/email/{email}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get a user by email
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *     responses:
+ *       200:
+ *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/User"
+ *       404:
+ *         description: User not found
+ */
+router.get("/email/:email", getByEmail);
 
 /**
  * @swagger
