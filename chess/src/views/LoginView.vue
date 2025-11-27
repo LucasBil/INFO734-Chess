@@ -29,7 +29,7 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="hero grow bg-base-200 min-h-screen">
+  <div class="hero grow min-h-screen bg-neutral-950 shrink-0">
     <div class="hero-content flex-col lg:flex-row-reverse w-full max-w-5xl">
       
       <div class="text-center lg:text-left lg:px-6">
@@ -37,7 +37,7 @@ const handleLogin = async () => {
         <p class="py-6">Login to access your game history and settings.</p>
       </div>
 
-      <div class="card bg-neutral-900 w-full max-w-sm shrink-0 shadow-2xl">
+      <div class="card bg-neutral-950 w-full max-w-sm shrink-0 shadow-2xl shadow-purple-600/50">
         <div class="card-body">
           <h2 class="card-title justify-center mb-4">Login</h2>
 
