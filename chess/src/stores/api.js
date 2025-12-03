@@ -18,7 +18,7 @@ export const useApiStore = defineStore('api', {
     // Register user
     async register(username, email, password) {
       try {
-        const response = await fetch(this.apiUrl + 'auth/register', {
+        const response = await fetch(this.apiUrl + 'auth/register/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
