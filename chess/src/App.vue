@@ -4,15 +4,6 @@
   import { RouterView, useRoute } from 'vue-router'
 
   const route = useRoute();
-
-  fetch('http://localhost:3000/games/')
-    .then(response => response.json())
-    .then(data => {
-      console.log('API Health Check:', data);
-    })
-    .catch(error => {
-      console.error('Error fetching API health status:', error);
-    });
 </script>
 
 <template>

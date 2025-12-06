@@ -54,7 +54,7 @@ onMounted(() => {
         alt="Winner avatar"
         class="w-32 h-32 rounded-full border-4 border-yellow-400 shadow-lg object-cover"
       />
-      <p class="mt-4 text-3xl font-bold text-yellow-300">{{ winner.profilename }}</p>
+      <p class="mt-4 text-3xl font-bold text-yellow-300">{{ winner.username }}</p>
     </Motion>
 
     <!-- Raison de la victoire -->

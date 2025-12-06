@@ -42,8 +42,8 @@
         </div>
         <div class="flex gap-2 items-center">
             <router-link v-if="isLogged" :to="{ name : 'profile' }" class="flex items-center gap-2">
-                <AvatarComponent :status="true" :avatar-url="profile.avatar"/>
-                <div class="hidden md:block">{{ profile.profilename }}</div>
+                <AvatarComponent status="online" :avatar-url="profile.avatar"/>
+                <div class="hidden md:block">{{ profile.username }}</div>
             </router-link>
             <router-link v-if="!isLogged" :to="{ name: 'login' }" class="btn btn-ghost">Login</router-link>
             <button v-else @click="logout" class="btn btn-ghost">Logout</button>

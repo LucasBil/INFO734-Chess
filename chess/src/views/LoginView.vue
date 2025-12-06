@@ -1,27 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRouter, RouterLink } from 'vue-router';
-import { useApiStore } from '@/stores/api';
+import { useProfileStore } from '@/stores/profile';
 
 const router = useRouter();
-const apiStore = useApiStore();
+const profileStore = useProfileStore()
 
 const email = ref('');
 const password = ref('');
 
-// Clear previous errors when page loads
-onMounted(() => {
-  apiStore.error = null;
-});
-
 const handleLogin = async () => {
   try {
-    // api.js: login(identifier, password)
-    await apiStore.login(email.value, password.value);
-    
-    if (!apiStore.error) {
-      router.push({ name: 'home' }); 
-    }
+    await profileStore.login(email.value, password.value);
+    router.push({ name: 'home' }); 
   } catch (e) {
     console.error(e);
   }
@@ -43,11 +34,6 @@ const handleLogin = async () => {
 
           <form @submit.prevent="handleLogin">
             <fieldset class="fieldset">
-              
-              <div v-if="apiStore.error" role="alert" class="alert alert-error mb-4 text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>{{ apiStore.error }}</span>
-              </div>
 
               <label class="label"><span class="label-text">Email or Username</span></label>
               <input v-model="email" type="text" class="input input-bordered w-full" required />

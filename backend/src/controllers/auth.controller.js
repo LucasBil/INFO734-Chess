@@ -42,7 +42,7 @@ export const login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ accessToken, expiresIn: ACCESS_EXPIRES });
+    res.json({ id: user._id, username: user.username, email: user.email, avatar: user.avatarUrl, accessToken: accessToken, expiresIn: ACCESS_EXPIRES });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

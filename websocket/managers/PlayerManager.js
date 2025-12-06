@@ -11,7 +11,7 @@ export class PlayerManager {
     this.players.set(id, player);
 
     player.send({ type: 'CONNECTED', id, profile });
-    console.log(`👤 Player connected: ${id} (${profile?.profilename ?? 'Guest'})`);
+    console.log(`👤 Player connected: ${id} (${profile?.username ?? 'Guest'})`);
     return player;
   }
 
