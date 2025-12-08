@@ -3,52 +3,26 @@
     import 'chessboard-element';
     import { Chess } from 'chess.js';
     import { aiMove } from 'js-chess-engine';
-    import Pieces from '@/utils/pieces';
-
-    /*
-    //#region resize board
-    // function updateBoardHeight() {
-    //     const boardEl = board.value;
-    //     if (!boardEl) return;
-
-    //     const shadowBoard = boardEl.shadowRoot?.querySelector('div[part="board"]');
-    //     if (!shadowBoard) return;
-
-    //     const boardHeight = shadowBoard.style.height;
-    //     boardEl.style.height = boardHeight;
-    // }
-
-    // function handleResize() {
-    //     updateBoardHeight();
-    //     board.value?.resize();
-    // }
-    //#endregion
-    // if (!props.sparePieces) {
-    //     updateBoardHeight();
-    //     window.addEventListener('resize', handleResize);
-    // }
-    */
+    import Pieces from '@/utils/pieces.js';
 
     const props = defineProps({
-        bot : { type: Number }, // If set, humain vs bot with bot level 0 to 4
-        side : { type: String }, // [w, b]
-        // Config : Board
-        fen: { type: String, default: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' }, // Default position
-        orientation: { type: String, default: 'white' }, // [white, black]
+        bot : { type: Number },
+        side : { type: String },
+        fen: { type: String, default: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' }, 
+        orientation: { type: String, default: 'white' },
         draggablePieces: { type: Boolean, default: true },
         hideNotation: { type: Boolean, default: false },
         sparePieces: { type: Boolean, default: true },
         dropOffBoard: { type: String, default: 'snapback' },
-        // => Style (Animaton + theme)
         highlightLegalMoves: { type: Boolean, default: true },
-        animation: { type: Object }, // move-speed, snapback-speed, snap-speed
+        animation: { type: Object },
         theme: { type: String },
     });
 
     const board = ref(null);
     const game = new Chess(props.fen);
     const emit = defineEmits(['start', 'move', 'end']);
-    defineExpose({ playMove });
+    defineExpose({ playMove, getPosition, restorePosition, resetToStart });
 
     // Style Highlight
     const highlightStyles = document.createElement('style');
@@ -58,20 +32,14 @@
 
     onMounted(async () => {
         await nextTick();
-        //#region init board
-        board.value.setPosition(game.fen()); // set default position
+        board.value.setPosition(game.fen()); 
         emit('start', { timestamps: Date.now(), fen: game.fen()});
-        //#endregion
 
         board.value.addEventListener('drag-start', (e) => {
-            if (
-                !props.draggablePieces || // Not draggable piece
-                game.isGameOver()// Game is over
-            ) {
+            if (!props.draggablePieces || game.isGameOver()) {
                 e.preventDefault();
                 return;
             }
-
             if (props.side && game.turn() != props.side) {
                 e.preventDefault();
                 return;
@@ -80,13 +48,23 @@
 
         board.value.addEventListener('drop', (e) => {
             const { source, target, setAction } = e.detail;
-            if (props.highlightLegalMoves)
-                removeGreySquares();
+            if (props.highlightLegalMoves) removeGreySquares();
 
             try {
-                let move = { from: source, to: target, promotion: Pieces.TYPES.QUEEN } // Promotion
-                game.move(move);
-                emit('move', { move: move, fen: game.fen()});
+                let move = { from: source, to: target, promotion: Pieces.TYPES.QUEEN } 
+                const result = game.move(move);
+                
+                emit('move', { 
+                    move: move, 
+                    fen: game.fen(),
+                    piece: result.piece,
+                    color: result.color,
+                    captured: result.captured,
+                    promotion: result.promotion,
+                    check: game.inCheck(),
+                    checkmate: game.isCheckmate(),
+                    castling: result.flags.includes('k') ? 'k' : result.flags.includes('q') ? 'q' : null
+                });
             } catch {
                 setAction('snapback');
             }
@@ -94,18 +72,24 @@
 
         board.value.addEventListener('snap-end', () => {
             board.value.setPosition(game.fen());
-            if (game.isGameOver())
+            if (game.isGameOver()) {
                 emitGameOver(game)
+                return;
+            }
 
-            if (props.bot)
-                botMove(props.bot);
+            if (props.bot !== undefined && game.turn() !== props.side) {
+                setTimeout(() => {
+                    botMove(props.bot);
+                }, 500);
+            }
         });
 
         if (props.highlightLegalMoves) {
             board.value.addEventListener('mouseover-square', (e) => {
                 const { square } = e.detail;
-                const moves = game.moves({ square, verbose: true });
+                if (props.side && game.turn() !== props.side) return; // Only highlight on your turn
 
+                const moves = game.moves({ square, verbose: true });
                 if (moves.length === 0) return;
 
                 greySquare(square);
@@ -119,20 +103,46 @@
     });
 
     function botMove(level) {
-        let move = aiMove(game.fen(), level );
-        let [from, to] = Object.entries(move)[0];
-        move = { from: from.toLocaleLowerCase(), to: to.toLocaleLowerCase(), promotion: Pieces.TYPES.QUEEN}; //Promotion
-        game.move(move);
-        board.value.setPosition(game.fen());
-        emit('move', { move, fen: game.fen()});
-        if (game.isGameOver())
-            emitGameOver(game)
+        try {
+            let moveObj = aiMove(game.fen(), level);
+            let [from, to] = Object.entries(moveObj)[0];
+            let move = { from: from.toLowerCase(), to: to.toLowerCase(), promotion: Pieces.TYPES.QUEEN}; 
+            
+            const result = game.move(move);
+            board.value.setPosition(game.fen());
+            
+            emit('move', { 
+                move, 
+                fen: game.fen(),
+                piece: result.piece,
+                color: result.color,
+                captured: result.captured,
+                promotion: result.promotion,
+                check: game.inCheck(),
+                checkmate: game.isCheckmate(),
+                castling: result.flags.includes('k') ? 'k' : result.flags.includes('q') ? 'q' : null
+            });
+            
+            if (game.isGameOver()) emitGameOver(game)
+        } catch (e) { console.error("Bot Error", e) }
     }
 
     function playMove(from, to, promotion=null) {
         try {
-            game.move({ from, to, promotion });
+            const result = game.move({ from, to, promotion });
             board.value.setPosition(game.fen());
+            
+            emit('move', { 
+                move: { from, to, promotion }, 
+                fen: game.fen(),
+                piece: result.piece,
+                color: result.color,
+                captured: result.captured,
+                promotion: result.promotion,
+                check: game.inCheck(),
+                checkmate: game.isCheckmate(),
+                castling: result.flags.includes('k') ? 'k' : result.flags.includes('q') ? 'q' : null
+            });
         } catch { }
     }
 
@@ -161,20 +171,33 @@
                             : null;
         emit('end', { winner, reason, fen : _game.fen() })
     }
+
+    function getPosition() { return game.fen(); }
+
+    function restorePosition(fen) {
+        try {
+            game.load(fen);
+            board.value.setPosition(game.fen());
+        } catch (error) { console.error('Failed to restore position:', error); }
+    }
+
+    function resetToStart() {
+        game.reset();
+        board.value.setPosition(game.fen());
+    }
 </script>
 
 <template>
-    <div>
+    <div class="w-full h-full">
         <chess-board
             ref="board"
-            style="width: 100%; z-index: 0;"
+            style="width: 100%; height: 100%; display: block;"
             :orientation="orientation"
             v-bind="{
                 ...(hideNotation ? { 'hide-notation': true } : {}),
                 ...(sparePieces ? { 'spare-pieces': true } : {}),
                 ...(draggablePieces ? { 'draggable-pieces': true } : {}),
                 ...(dropOffBoard ? { 'drop-off-board': dropOffBoard } : {}),
-                // Theme + Animation
                 ...(animation?.move_speed ? { 'move-speed': `${animation.move_speed}` } : {}),
                 ...(animation?.snapback_speed ? { 'snapback-speed': `${animation.snapback_speed}` } : {}),
                 ...(animation?.snap_speed ? { 'snap-speed': `${animation.snap_speed}` } : {}),
