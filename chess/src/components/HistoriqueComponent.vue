@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApiStore } from '@/stores/api';
 import { useProfileStore } from '@/stores/profile';
+import king from '@/assets/icons/king.vue';
 
 const router = useRouter();
 const profileStore = useProfileStore();
@@ -12,11 +13,13 @@ const apiStore = useApiStore();
 const rawGames = ref([]);
 
 const fetchGames = async () => {
-  const email = profileStore.profile?.email;
+  const id = profileStore.profile?.id;
   
-  if (email) {
+  if (id) {
     try {
-      const gamesFromApi = await apiStore.fetchUserGames(email);
+      console.log("Fetching games for email:", id);
+      const gamesFromApi = await apiStore.fetchUserGames(id);
+      console.log("Result:", gamesFromApi);
       
       if (Array.isArray(gamesFromApi)) {
         rawGames.value = gamesFromApi;
@@ -42,13 +45,24 @@ const lastFiveGames = computed(() => {
 
 <template>
   <div class="historique-container">
+
     
     <div 
       v-for="(game, index) in lastFiveGames" 
       :key="game.result || index" 
-      class="historique"
+      class="historique flex items-center justify-center gap-4"
     >
-      Game {{ index + 1 }} -> résultat : {{ game.result }} points
+      <div class="text-white font-bold text-xl flex items-center">
+        <king class="inline w-6 h-6 mr-2" />
+      </div>
+      <p class="grow">
+        Game {{ index + 1 }} | 
+        <span v-if="game.result == 'black' && game.black.id == id">Victoire</span>
+        <span v-else-if="game.result == 'white' && game.white.id == id">Victoire</span>
+        <span v-else>Défaite</span>
+      </p>
+            
+
     </div>
 
     <div v-if="lastFiveGames.length === 0" class="historique">
@@ -64,6 +78,7 @@ const lastFiveGames = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  justify-items: center;
 }
 
 .historique {
@@ -75,5 +90,8 @@ const lastFiveGames = computed(() => {
   font-size: 18px;
   border-radius: 5px;
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-items: center;
 }
 </style>

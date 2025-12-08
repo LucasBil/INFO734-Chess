@@ -123,7 +123,7 @@ export const useApiStore = defineStore('api', {
     },
     async fetchUserGames(userId) {
         try {
-            const response = await fetch(this.apiUrl + `games/user/${userId}`, {
+            const response = await fetch(this.apiUrl + `games/player/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ export const useApiStore = defineStore('api', {
             console.error('Error fetching user games:', err)
         }
     },
-    async fetchUserGames(userId) {
+    async fetchUserWhiteGames(userId) {
         try {
             const response = await fetch(this.apiUrl + `games/white/${userId}`, {
                 method: 'GET',
@@ -147,7 +147,7 @@ export const useApiStore = defineStore('api', {
             console.error('Error fetching user games:', err)
         }
     },
-    async fetchUserGames(userId) {
+    async fetchUserBlackGames(userId) {
         try {
             const response = await fetch(this.apiUrl + `games/black/${userId}`, {
                 method: 'GET',
