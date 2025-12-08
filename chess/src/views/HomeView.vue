@@ -1,6 +1,9 @@
 <script setup>
   import OnlineBattleButton from '@/components/OnlineBattleButton.vue';
   import BotBattleButton from '@/components/BotBattleButton.vue';
+  import HistoriqueComponent from '@/components/HistoriqueComponent.vue';
+
+
 </script>
 
 <template>
@@ -10,10 +13,11 @@
     <BotBattleButton />
     <OnlineBattleButton />
     <div class="mt-8 text-center max-w-md">
-      <h2 class="text-2xl font-semibold mb-4">About Chess.com</h2>
-      <p class="text-base">
-        Chess.com is the ultimate platform for chess enthusiasts of all levels. Whether you're a beginner looking to learn the basics or an experienced player seeking challenging opponents, we've got you covered. Enjoy seamless gameplay, track your progress, and connect with a vibrant community of chess lovers worldwide.
-      </p>
+      <h2 class="text-2xl font-semibold mb-4">Historique des Games</h2>
+      <div>
+        <HistoriqueComponent />
+        
+      </div>
     </div>
   </div>
 </template>
