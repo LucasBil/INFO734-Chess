@@ -40,7 +40,7 @@
         class="text-white text-3xl flex flex-col items-center"
       >
         <img :src="player_1.avatar" class="w-24 h-24 rounded-full border-4 border-white" />
-        <p class="mt-2 font-bold">{{ player_1.profilename }}</p>
+        <p class="mt-2 font-bold">{{ player_1.username }}</p>
       </Motion>
 
       <!-- VS -->
@@ -61,7 +61,7 @@
         class="text-white text-3xl flex flex-col items-center"
       >
         <img :src="player_2.avatar" class="w-24 h-24 rounded-full border-4 border-white" />
-        <p class="mt-2 font-bold">{{ player_2.profilename }}</p>
+        <p class="mt-2 font-bold">{{ player_2.username }}</p>
       </Motion>
     </div>
   </transition>

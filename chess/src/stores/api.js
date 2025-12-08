@@ -1,42 +1,49 @@
 // stores/api.js
-import { defineStore } from 'pinia'
-import { errorMonitor } from 'ws';
+import { defineStore } from 'pinia';
 
 export const useApiStore = defineStore('api', {
   state: () => ({
     apiUrl: 'http://localhost:3000/',
     token: null,
-    error: null
+    expiresIn : null,
   }),
-
   getters: {
     isAuthenticated: (state) => !!state.token,
   },
-
   actions: {
-
-    // Register user
+    loadStorage() {
+        const auth = localStorage.getItem('auth');
+        if (auth) {
+            const json = JSON.parse(auth);
+            this.token = json.token
+            this.expiresIn = json.expiresIn
+        }
+    },
+    setAuthentification(token, expiresIn) {
+        localStorage.setItem('auth', JSON.stringify({ "token" : token, "expiresIn" : expiresIn }));
+        this.token = token;
+        this.expiresIn = expiresIn;
+    },
+    removeAuthentification() {
+        localStorage.removeItem('auth');
+        this.token = null;
+        this.expiresIn = null;
+    },
+    //#region AUTH Route
     async register(username, email, password) {
       try {
-        const response = await fetch(this.apiUrl + 'auth/register', {
+        const response = await fetch(this.apiUrl + 'auth/register/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ username, email, password })
         })
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        this.data = await response.json()
+        return await response.json();
       } catch (err) {
-        this.error = err.message
         console.error('Error fetching items:', err)
       }
     },
-
-
-    // Login user
     async login(identifier, password) {
       try {
         const response = await fetch(this.apiUrl + 'auth/login', {
@@ -46,17 +53,13 @@ export const useApiStore = defineStore('api', {
             },
             body: JSON.stringify({ identifier, password })
         })
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        this.token = (await response.json()).token
+        const json = await response.json()
+        this.setAuthentification(json.accessToken, json.expiresIn);
+        return json
       } catch (err) {
-        this.error = err.message
         console.error('Error logging in:', err)
       }
     },
-
-    // Refresh token
     async refreshToken() {
       try {
         const response = await fetch(this.apiUrl + 'auth/refresh', {
@@ -65,16 +68,14 @@ export const useApiStore = defineStore('api', {
                 'Content-Type': 'application/json'
             }
         })
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
+        const json = await response.json()
+        this.setAuthentification(json.accessToken, json.expiresIn);
+        return json
       } catch (err) {
         this.error = err.message
         console.error('Error refreshing token:', err)
       }
     },
-
-    // Logout user
     async logout() {
       try {
         const response = await fetch(this.apiUrl + 'auth/logout', {
@@ -83,17 +84,16 @@ export const useApiStore = defineStore('api', {
                 'Content-Type': 'application/json'
             }
         })
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        this.token = null
+        this.removeAuthentification();
+        return await response.json();
       } catch (err) {
         this.error = err.message
         console.error('Error logging out:', err)
       }
     },
+    //#endregion
 
-    // Get all games
+    //#region GAMES Route
     async fetchAllGames() {
         try {
             const response = await fetch(this.apiUrl + 'games', {
@@ -102,18 +102,11 @@ export const useApiStore = defineStore('api', {
                     'Content-Type': 'application/json',
                 }
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error fetching games:', err)
         }
     },
-
-    // Create a new game
     async createGame(sessionId, white, black) {
         try {
             const response = await fetch(this.apiUrl + 'games', {
@@ -123,18 +116,11 @@ export const useApiStore = defineStore('api', {
                 },
                 body: JSON.stringify({ sessionId, white, black })
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }   
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error creating game:', err)
         }
     },
-
-    // Get all games for a user
     async fetchUserGames(userId) {
         try {
             const response = await fetch(this.apiUrl + `games/user/${userId}`, {
@@ -143,18 +129,11 @@ export const useApiStore = defineStore('api', {
                     'Content-Type': 'application/json',
                 }
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error fetching user games:', err)
         }
     },
-
-    // Get all games where user played white
     async fetchUserGames(userId) {
         try {
             const response = await fetch(this.apiUrl + `games/white/${userId}`, {
@@ -163,18 +142,11 @@ export const useApiStore = defineStore('api', {
                     'Content-Type': 'application/json',
                 }
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error fetching user games:', err)
         }
     },
-
-    // Get all games where user played black
     async fetchUserGames(userId) {
         try {
             const response = await fetch(this.apiUrl + `games/black/${userId}`, {
@@ -183,18 +155,11 @@ export const useApiStore = defineStore('api', {
                     'Content-Type': 'application/json',
                 }
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error fetching user games:', err)
         }
     },
-
-    // Get game by id
     async fetchGameById(gameId) {
         try {
             const response = await fetch(this.apiUrl + `games/${gameId}`, {
@@ -203,18 +168,11 @@ export const useApiStore = defineStore('api', {
                     'Content-Type': 'application/json',
                 }
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error fetching game by id:', err)
         }
     },
-
-    // Update game (admin only)
     async updateGame(gameId, updateData) {
         try {
             const response = await fetch(this.apiUrl + `games/${gameId}`, {
@@ -225,18 +183,11 @@ export const useApiStore = defineStore('api', {
                 },
                 body: JSON.stringify(updateData)
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error updating game:', err)
         }
     },
-
-    // Delete game (admin only)
     async deleteGame(gameId) {
         try {
             const response = await fetch(this.apiUrl + `games/${gameId}`, {
@@ -246,18 +197,11 @@ export const useApiStore = defineStore('api', {
                     'Authorization': `Bearer ${this.token}`
                 }
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error deleting game:', err)
         }
     },
-
-    // Add a move to a game (admin only)
     async addMoveToGame(gameId, moveData) {
         try {
             const response = await fetch(this.apiUrl + `games/${gameId}/move`, {
@@ -268,18 +212,14 @@ export const useApiStore = defineStore('api', {
                 },
                 body: JSON.stringify(moveData)
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error adding move to game:', err)
         }
     },
+    //#endregion
 
-    // Get all users
+    //#region USERS Route
     async getAllUsers() {
         try {
             const response = await fetch(this.apiUrl + 'users', {
@@ -289,39 +229,25 @@ export const useApiStore = defineStore('api', {
                  },
                  body: JSON.stringify()
                  })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error fetching all users:', err)
         }
     },
-
-    // Get user by username
     async getUserByUsername(username) {
         try {
             const response = await fetch(this.apiUrl + `users/username/${username}`, {
-                 method: 'GET',
-                 headers: {
-                        'Content-Type': 'application/json',
-                    },  
-                    body: JSON.stringify()
-                    })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },  
+                body: JSON.stringify()
+            })
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error fetching user by username:', err)
         }
     },
-
-    // Get user by email
     async getUserByEmail(email) {
         try {
             const response = await fetch(this.apiUrl + `users/email/${email}`, {
@@ -331,18 +257,11 @@ export const useApiStore = defineStore('api', {
                     },
                     body: JSON.stringify()
                     })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error fetching user by email:', err)
         }   
     },
-
-    // Get user by id
     async getUserById(userId) {
         try {
             const response = await fetch(this.apiUrl + `users/${userId}`, {
@@ -352,18 +271,11 @@ export const useApiStore = defineStore('api', {
                     },
                     body: JSON.stringify()
                     })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }   
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error fetching user by id:', err)
         }
     },
-
-    // Update user (admin only)
     async updateUser(userId, updateData) {
         try {   
             const response = await fetch(this.apiUrl + `users/${userId}`, {
@@ -374,18 +286,11 @@ export const useApiStore = defineStore('api', {
                 },
                 body: JSON.stringify(updateData)
             })
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error updating user:', err)
         }
     },
-
-    // Delete user (admin only)
     async deleteUser(userId) {
         try {
             const response = await fetch(this.apiUrl + `users/${userId}`, {
@@ -395,14 +300,10 @@ export const useApiStore = defineStore('api', {
                     'Authorization': `Bearer ${this.token}`
                 }
             })      
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            return data
+            return await response.json();
         } catch (err) {
-            this.error = err.message
             console.error('Error deleting user:', err)
         }
     },
+    //#endregion
 }});

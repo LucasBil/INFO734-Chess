@@ -41,9 +41,9 @@
             <router-link :to="{ name: 'home' }" class="text-xl font-medium text-white">chess.com</router-link>
         </div>
         <div class="flex gap-2 items-center">
-            <router-link v-if="isLogged" :to="{ name : 'profile' }" class="flex items-center gap-2 text-white">
-                <AvatarComponent :status="true" :avatar-url="profile.avatar"/>
-                <div class="hidden md:block">{{ profile.profilename }}</div>
+            <router-link v-if="isLogged" :to="{ name : 'profile' }" class="flex items-center gap-2">
+                <AvatarComponent status="online" :avatar-url="profile.avatar"/>
+                <div class="hidden md:block">{{ profile.username }}</div>
             </router-link>
             <router-link v-if="!isLogged" :to="{ name: 'login' }" class="btn btn-ghost text-white">Login</router-link>
             <button v-else @click="logout" class="btn btn-ghost text-white">Logout</button>

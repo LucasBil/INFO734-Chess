@@ -20,11 +20,11 @@
 
 <template>
     <div class="flex items-start gap-2">
-        <p v-if="!reverse">{{ profile.profilename }}</p>
+        <p v-if="!reverse">{{ profile.username }}</p>
         <AvatarComponent
             :status="status"
             :avatarUrl="profile.avatar"
         />
-        <p v-if="reverse">{{ profile.profilename }}</p>
+        <p v-if="reverse">{{ profile.username }}</p>
     </div>
 </template>
