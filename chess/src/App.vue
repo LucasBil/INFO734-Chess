@@ -8,7 +8,7 @@
 
 <template>
   <HeaderComponent />
-  <main class="grow flex flex-col bg-[#1A1818]">
+  <main class="grow flex flex-col" :class="{ 'bg-[#1A1818]': route.name !== 'home' }">
     <RouterView />
   </main>
   <FooterComponent v-if="route.name !== 'game'" />
