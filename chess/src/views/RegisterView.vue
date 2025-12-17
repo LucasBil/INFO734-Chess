@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, RouterLink } from 'vue-router';
 import { useApiStore } from '@/stores/api';
+import { Motion } from 'motion-v';
 
 const router = useRouter();
 const apiStore = useApiStore();
@@ -10,6 +11,16 @@ const username = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
+
+const togglePassword = () => {
+  showPassword.value = !showPassword.value;
+};
+
+const toggleConfirmPassword = () => {
+  showConfirmPassword.value = !showConfirmPassword.value;
+};
 
 // Clear previous errors when page loads
 onMounted(() => {
@@ -37,59 +48,173 @@ const handleRegister = async () => {
 </script>
 
 <template>
-  <div class="hero grow bg-base-200 min-h-screen bg-neutral-950 shrink-0">
-    <div class="hero-content flex-col lg:flex-row-reverse w-full max-w-5xl">
-      
-      <div class="text-center lg:text-left lg:px-6">
-        <h1 class="text-5xl font-bold">Join Us!</h1>
-        <p class="py-6">Create an account to start playing and tracking your games.</p>
-      </div>
+  <div class="grow w-full flex items-center justify-center bg-zinc-950 relative overflow-hidden selection:bg-purple-500 selection:text-white py-20">
+    
+    <!-- Background Elements -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px] animate-pulse"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-900/20 rounded-full blur-[120px] animate-pulse"></div>
+        <div class="absolute top-[20%] right-[60%] w-[20%] h-[20%] bg-fuchsia-900/10 rounded-full blur-[80px]"></div>
+    </div>
 
-      <div class="card bg-neutral-900 w-full max-w-sm shadow-2xl shadow-purple-600/50">
-        <div class="card-body">
-          <h2 class="card-title text-sm justify-center mb-4">Create Account</h2>
+    <!-- Main Content -->
+     <Motion
+        :initial="{ opacity: 0, y: 20 }"
+        :animate="{ opacity: 1, y: 0 }"
+        :transition="{ duration: 0.6, ease: 'easeOut' }"
+        class="card w-full max-w-lg bg-zinc-900/40 backdrop-blur-xl border border-white/5 shadow-2xl relative z-10 overflow-hidden hover:shadow-[0_0_30px_rgba(168,85,247,0.4)] hover:border-purple-500/30 transition-all duration-500"
+    >
+        <!-- Card Glow -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50"></div>
 
-          <form @submit.prevent="handleRegister">
-            <fieldset class="fieldset">
+        <div class="card-body p-8 sm:p-10 padding-auto margin-auto">
+            <div class="text-center mb-6">
+                <Motion 
+                    :initial="{ scale: 0.8, opacity: 0 }"
+                    :animate="{ scale: 1, opacity: 1 }"
+                    :transition="{ delay: 0.2, duration: 0.5 }"
+                    class="inline-block p-3 rounded-2xl bg-gradient-to-tr from-purple-500/20 to-indigo-500/20 mb-4 ring-1 ring-white/10"
+                >
+                    <img src="@/assets/logo.png" alt="Logo" class="w-12 h-12 object-contain" />
+                </Motion>
+                <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 tracking-tight">Join the Game</h2>
+                <p class="text-zinc-400 mt-2 text-sm">Create your Grandmaster account today.</p>
+            </div>
 
-                <label class="label"><span class="label-text">Username</span></label>
-                <input v-model="username" type="text" class="input input-bordered w-full bg-neutral-800" required />
-
-                <label class="label"><span class="label-text">Email</span></label>
-                <input v-model="email" type="email" class="input input-bordered w-full bg-neutral-800" required />
-
-                <label class="label"><span class="label-text">Password</span></label>
-                <input v-model="password" type="password" class="input input-bordered w-full bg-neutral-800" required />
-
-                <label class="label"><span class="label-text">Confirm Password</span></label>
-                <input 
-                    v-model="confirmPassword" 
-                    type="password" 
-                    class="input input-bordered w-full bg-neutral-800" 
-                    :class="{'input-error': !passwordsMatch && confirmPassword.length > 0}"
-                    required 
-                />
-                <label v-if="!passwordsMatch && confirmPassword.length > 0" class="label">
-                <span class="label-text-alt text-error">Passwords must match</span>
-                </label>
-
-                <div class="form-control mt-6 flex justify-center">
-                    <button type="submit" class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-[#ab2bff] shadow-purple-500/50 px-6 font-medium text-neutral-200 duration-500"><div class="text-md translate-x-0 opacity-100 transition group-hover:-translate-x-[150%] group-hover:opacity-0">Sign up</div><div class="absolute translate-x-[150%] opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg></div></button>
+            <form @submit.prevent="handleRegister" class="space-y-4">
+                
+                <div class="group">
+                    <label class="label pl-1 py-1"><span class="label-text text-xs uppercase font-bold tracking-wider text-zinc-500 group-focus-within:text-purple-400 transition-colors">Username</span></label>
+                    <div class="relative">
+                        <input 
+                            v-model="username" 
+                            type="text" 
+                            class="input input-bordered w-full bg-zinc-950/50 border-white/5 focus:border-purple-500/50 text-white placeholder-zinc-600 pl-10 transition-all duration-300 focus:shadow-[0_0_20px_rgba(168,85,247,0.15)] focus:scale-[1.01]" 
+                            placeholder="MagnusCarlsen"
+                            required 
+                        />
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-500">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.492a6.002 6.002 0 0113.07 0 1.5 1.5 0 00-1.933 2.508 3 3 0 01-9.204 0 1.5 1.5 0 00-1.933-2.508z" />
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="divider text-xs">OR</div>
-
-                <div class="text-center text-sm">
-                Already have an account? 
-                    <RouterLink :to="{ name: 'login' }" class="link link-primary font-bold">
-                    Login here
-                    </RouterLink>
+                <div class="group">
+                    <label class="label pl-1 py-1"><span class="label-text text-xs uppercase font-bold tracking-wider text-zinc-500 group-focus-within:text-purple-400 transition-colors">Email</span></label>
+                    <div class="relative">
+                        <input 
+                            v-model="email" 
+                            type="email" 
+                            class="input input-bordered w-full bg-zinc-950/50 border-white/5 focus:border-purple-500/50 text-white placeholder-zinc-600 pl-10 transition-all duration-300 focus:shadow-[0_0_20px_rgba(168,85,247,0.15)] focus:scale-[1.01]" 
+                            placeholder="grandmaster@chess.com"
+                            required 
+                        />
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-500">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
+                                <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
-            </fieldset>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div class="group">
+                        <label class="label pl-1 py-1"><span class="label-text text-xs uppercase font-bold tracking-wider text-zinc-500 group-focus-within:text-purple-400 transition-colors">Password</span></label>
+                        <div class="relative">
+                            <input 
+                                v-model="password" 
+                                :type="showPassword ? 'text' : 'password'" 
+                                class="input input-bordered w-full bg-zinc-950/50 border-white/5 focus:border-purple-500/50 text-white placeholder-zinc-600 pl-10 pr-10 transition-all duration-300 focus:shadow-[0_0_20px_rgba(168,85,247,0.15)] focus:scale-[1.01]" 
+                                placeholder="••••••••"
+                                required 
+                            />
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <button 
+                                type="button"
+                                @click="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                            >
+                                <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                    <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+                                    <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                </svg>
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M3.28 2.22a.75.75 0 00-1.06 1.06l14.5 14.5a.75.75 0 101.06-1.06l-1.745-1.745A10.029 10.029 0 0018 10c0-4.257-3.636-6.91-7.893-6.91-1.636 0-3.14.404-4.453 1.115l-1.374-1.374zM4.795 7.973C3.606 8.528 2.6 9.395 1.95 10c.85 1.91 2.376 3.447 4.246 4.417l2.843-2.843a2.5 2.5 0 01-3.243-3.243L4.795 7.973zm2.528-2.528l1.458 1.458a4.015 4.015 0 013.916 3.916l1.393 1.393A4.01 4.01 0 0014 10a4 4 0 00-4-4 4.01 4.01 0 00-2.677 1.445z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="group">
+                        <label class="label pl-1 py-1"><span class="label-text text-xs uppercase font-bold tracking-wider text-zinc-500 group-focus-within:text-purple-400 transition-colors">Confirm</span></label>
+                        <div class="relative">
+                            <input 
+                                v-model="confirmPassword" 
+                                :type="showConfirmPassword ? 'text' : 'password'" 
+                                class="input input-bordered w-full bg-zinc-950/50 border-white/5 focus:border-purple-500/50 text-white placeholder-zinc-600 pl-10 pr-10 transition-all duration-300 focus:shadow-[0_0_20px_rgba(168,85,247,0.15)] focus:scale-[1.01]" 
+                                :class="{'input-error': !passwordsMatch && confirmPassword.length > 0}"
+                                placeholder="••••••••"
+                                required 
+                            />
+                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <button 
+                                type="button"
+                                @click="toggleConfirmPassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                            >
+                                <svg v-if="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                    <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+                                    <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                </svg>
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M3.28 2.22a.75.75 0 00-1.06 1.06l14.5 14.5a.75.75 0 101.06-1.06l-1.745-1.745A10.029 10.029 0 0018 10c0-4.257-3.636-6.91-7.893-6.91-1.636 0-3.14.404-4.453 1.115l-1.374-1.374zM4.795 7.973C3.606 8.528 2.6 9.395 1.95 10c.85 1.91 2.376 3.447 4.246 4.417l2.843-2.843a2.5 2.5 0 01-3.243-3.243L4.795 7.973zm2.528-2.528l1.458 1.458a4.015 4.015 0 013.916 3.916l1.393 1.393A4.01 4.01 0 0014 10a4 4 0 00-4-4 4.01 4.01 0 00-2.677 1.445z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                 
+                 <div v-if="!passwordsMatch && confirmPassword.length > 0" class="text-xs text-error mt-1 ml-1 font-medium">
+                    Passwords must match
+                 </div>
+
+                <div class="pt-2">
+                    <button 
+                        type="submit" 
+                        class="btn btn-block bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white border-0 shadow-lg shadow-purple-900/20 hover:shadow-purple-700/40 relative overflow-hidden group transition-all duration-300"
+                    >
+                        <span class="relative z-10 flex items-center gap-2">
+                            Create Account
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 transition-transform group-hover:translate-x-1">
+                                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                            </svg>
+                        </span>
+                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    </button>
+                </div>
+
+                <div class="text-center mt-6">
+                    <p class="text-zinc-500 text-sm">
+                        Already have an account? 
+                        <RouterLink :to="{ name: 'login' }" class="text-zinc-300 hover:text-white font-medium underline decoration-purple-500/50 hover:decoration-purple-500 transition-all">
+                        Login here
+                        </RouterLink>
+                    </p>
+                </div>
+
           </form>
         </div>
-      </div>
-    </div>
+      </Motion>
   </div>
 </template>
