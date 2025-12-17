@@ -10,7 +10,7 @@
 
         <aside>
             <div class="flex items-center gap-2 mb-2">
-                <span class="text-4xl">♟️</span>
+                <img src="@/assets/logo.png" alt="Logo" class="w-12 h-12 object-contain" />
                 <p class="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
                     Checkmate.com
                 </p>

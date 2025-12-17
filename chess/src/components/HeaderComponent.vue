@@ -44,7 +44,7 @@
         </div>
         <div class="flex-1 px-2">
             <router-link :to="{ name: 'home' }" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400 hover:to-purple-300 transition-all duration-300 tracking-tight flex items-center gap-2">
-                <span class="text-3xl">♟️</span> Checkmate.com
+                <img src="@/assets/logo.png" alt="Logo" class="w-10 h-10 object-contain" /> Checkmate.com
             </router-link>
         </div>
         <div class="flex gap-3 items-center px-2">
