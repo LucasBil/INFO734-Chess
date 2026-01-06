@@ -164,26 +164,15 @@ function goToEnd() {
         jumpToMove(moves.value.length - 1);
     }
 }
-
 defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
-function goToEnd() {
-    if (moves.value.length > 0) {
-        jumpToMove(moves.value.length - 1);
-    }
-}
 
-defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
 </script>
 
 <template>
     <div class="flex flex-col h-full bg-zinc-900/60 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-    <div class="flex flex-col h-full bg-zinc-900/60 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
         <div 
             class="p-4 border-b border-white/5 transition-colors duration-300"
-            class="p-4 border-b border-white/5 transition-colors duration-300"
             :class="{
-                'bg-purple-500/10 ring-1 ring-purple-500/20': activePlayer === topPlayerColor,
-                'bg-red-500/10': isLowTime(topPlayerTime)
                 'bg-purple-500/10 ring-1 ring-purple-500/20': activePlayer === topPlayerColor,
                 'bg-red-500/10': isLowTime(topPlayerTime)
             }"
@@ -200,10 +189,7 @@ defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
                 <div 
                     class="flex items-center gap-2 text-lg font-mono font-bold px-3 py-1 rounded-lg bg-zinc-950/50 border border-white/5 text-zinc-300"
                     :class="{ 'text-red-400 animate-pulse bg-red-500/10 border-red-500/20': isLowTime(topPlayerTime) }"
-                    class="flex items-center gap-2 text-lg font-mono font-bold px-3 py-1 rounded-lg bg-zinc-950/50 border border-white/5 text-zinc-300"
-                    :class="{ 'text-red-400 animate-pulse bg-red-500/10 border-red-500/20': isLowTime(topPlayerTime) }"
                 >
-                    <ClockIcon class="w-5 h-5 opacity-70" />
                     <ClockIcon class="w-5 h-5 opacity-70" />
                     {{ formatTime(topPlayerTime) }}
                 </div>
@@ -212,30 +198,22 @@ defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
 
         <div ref="movesContainer" class="flex-1 overflow-y-auto p-4 scroll-smooth custom-scrollbar">
             <div v-if="moves.length === 0" class="text-center text-zinc-600 py-8">
-        <div ref="movesContainer" class="flex-1 overflow-y-auto p-4 scroll-smooth custom-scrollbar">
-            <div v-if="moves.length === 0" class="text-center text-zinc-600 py-8">
                 <p>No moves yet</p>
             </div>
             
-            <div v-else class="space-y-0.5">
             <div v-else class="space-y-0.5">
                 <div 
                     v-for="pair in movePairs" 
                     :key="pair.number"
                     class="flex items-center gap-2 text-sm group"
-                    class="flex items-center gap-2 text-sm group"
                 >
-                    <div class="w-8 text-zinc-600 font-mono text-xs text-center shrink-0">
                     <div class="w-8 text-zinc-600 font-mono text-xs text-center shrink-0">
                         {{ pair.number }}.
                     </div>
                     
                     <button
                         class="flex-1 px-3 py-1.5 rounded text-left font-medium transition-all duration-200"
-                        class="flex-1 px-3 py-1.5 rounded text-left font-medium transition-all duration-200"
                         :class="{
-                            'bg-purple-500/20 text-purple-200 ring-1 ring-purple-500/20': currentMoveIndex === pair.whiteIndex,
-                            'text-zinc-400 hover:bg-white/5 hover:text-zinc-200': currentMoveIndex !== pair.whiteIndex
                             'bg-purple-500/20 text-purple-200 ring-1 ring-purple-500/20': currentMoveIndex === pair.whiteIndex,
                             'text-zinc-400 hover:bg-white/5 hover:text-zinc-200': currentMoveIndex !== pair.whiteIndex
                         }"
@@ -247,10 +225,7 @@ defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
                     <button
                         v-if="pair.black"
                         class="flex-1 px-3 py-1.5 rounded text-left font-medium transition-all duration-200"
-                        class="flex-1 px-3 py-1.5 rounded text-left font-medium transition-all duration-200"
                         :class="{
-                            'bg-purple-500/20 text-purple-200 ring-1 ring-purple-500/20': currentMoveIndex === pair.blackIndex,
-                            'text-zinc-400 hover:bg-white/5 hover:text-zinc-200': currentMoveIndex !== pair.blackIndex
                             'bg-purple-500/20 text-purple-200 ring-1 ring-purple-500/20': currentMoveIndex === pair.blackIndex,
                             'text-zinc-400 hover:bg-white/5 hover:text-zinc-200': currentMoveIndex !== pair.blackIndex
                         }"
@@ -265,10 +240,7 @@ defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
 
         <div 
             class="p-4 border-t border-white/5 transition-colors duration-300"
-            class="p-4 border-t border-white/5 transition-colors duration-300"
             :class="{
-                'bg-purple-500/10 ring-1 ring-purple-500/20': activePlayer === bottomPlayerColor,
-                'bg-red-500/10': isLowTime(bottomPlayerTime)
                 'bg-purple-500/10 ring-1 ring-purple-500/20': activePlayer === bottomPlayerColor,
                 'bg-red-500/10': isLowTime(bottomPlayerTime)
             }"
@@ -285,10 +257,7 @@ defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
                 <div 
                     class="flex items-center gap-2 text-lg font-mono font-bold px-3 py-1 rounded-lg bg-zinc-950/50 border border-white/5 text-zinc-300"
                     :class="{ 'text-red-400 animate-pulse bg-red-500/10 border-red-500/20': isLowTime(bottomPlayerTime) }"
-                    class="flex items-center gap-2 text-lg font-mono font-bold px-3 py-1 rounded-lg bg-zinc-950/50 border border-white/5 text-zinc-300"
-                    :class="{ 'text-red-400 animate-pulse bg-red-500/10 border-red-500/20': isLowTime(bottomPlayerTime) }"
-                >
-                    <ClockIcon class="w-5 h-5 opacity-70" />
+                    >
                     <ClockIcon class="w-5 h-5 opacity-70" />
                     {{ formatTime(bottomPlayerTime) }}
                 </div>
