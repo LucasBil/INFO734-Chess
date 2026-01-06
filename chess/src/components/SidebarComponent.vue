@@ -135,8 +135,16 @@ const movePairs = computed(() => {
     return pairs;
 });
 
-const topPlayer = computed(() => props.orientation === 'white' ? props.blackPlayer : props.whitePlayer);
-const bottomPlayer = computed(() => props.orientation === 'white' ? props.whitePlayer : props.blackPlayer);
+const topPlayer = computed(() => {
+    const player = props.orientation === 'white' ? props.blackPlayer : props.whitePlayer;
+    const p = player || { username: 'Unknown', avatar: '' };
+    return p.username ? p : { ...p, username: p.pseudo || 'Unknown' }; // Handle legacy 'pseudo' if mixed
+});
+const bottomPlayer = computed(() => {
+    const player = props.orientation === 'white' ? props.whitePlayer : props.blackPlayer;
+    const p = player || { username: 'Unknown', avatar: '' };
+    return p.username ? p : { ...p, username: p.pseudo || 'Unknown' };
+});
 const topPlayerColor = computed(() => props.orientation === 'white' ? 'b' : 'w');
 const bottomPlayerColor = computed(() => props.orientation === 'white' ? 'w' : 'b');
 const topPlayerTime = computed(() => props.orientation === 'white' ? props.blackTime : props.whiteTime);
@@ -169,10 +177,10 @@ defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
                 <div class="flex items-center gap-3">
                     <div class="avatar">
                         <div class="w-10 h-10 rounded-full ring-2 ring-white/10">
-                            <img :src="topPlayer.avatar" :alt="topPlayer.pseudo" />
+                            <img :src="topPlayer.avatar" :alt="topPlayer.username" />
                         </div>
                     </div>
-                    <div class="font-semibold text-zinc-200">{{ topPlayer.pseudo }}</div>
+                    <div class="font-semibold text-zinc-200">{{ topPlayer.username }}</div>
                 </div>
                 <div 
                     class="flex items-center gap-2 text-lg font-mono font-bold px-3 py-1 rounded-lg bg-zinc-950/50 border border-white/5 text-zinc-300"
@@ -237,10 +245,10 @@ defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
                 <div class="flex items-center gap-3">
                     <div class="avatar">
                         <div class="w-10 h-10 rounded-full ring-2 ring-white/10">
-                            <img :src="bottomPlayer.avatar" :alt="bottomPlayer.pseudo" />
+                            <img :src="bottomPlayer.avatar" :alt="bottomPlayer.username" />
                         </div>
                     </div>
-                    <div class="font-semibold text-zinc-200">{{ bottomPlayer.pseudo }}</div>
+                    <div class="font-semibold text-zinc-200">{{ bottomPlayer.username }}</div>
                 </div>
                 <div 
                     class="flex items-center gap-2 text-lg font-mono font-bold px-3 py-1 rounded-lg bg-zinc-950/50 border border-white/5 text-zinc-300"

@@ -92,8 +92,8 @@ export const useSocketStore = defineStore('socket', {
         sendMove(move) {
             this.send('MOVE', move)
         },
-        findGame() {
-            this.send('FIND_GAME')
+        findGame(options = {}) {
+            this.send('FIND_GAME', options)
         },
     }
 })

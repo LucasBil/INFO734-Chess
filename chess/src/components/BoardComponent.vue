@@ -23,6 +23,8 @@
     const game = new Chess(props.fen);
     const emit = defineEmits(['start', 'move', 'end']);
     defineExpose({ playMove, getPosition, restorePosition, resetToStart });
+    
+    let botTimeout = null; // Store timeout ID
 
     // Style Highlight
     const highlightStyles = document.createElement('style');
@@ -32,77 +34,92 @@
 
     onMounted(async () => {
         await nextTick();
-        board.value.setPosition(game.fen()); 
-        emit('start', { timestamps: Date.now(), fen: game.fen()});
-
-        board.value.addEventListener('drag-start', (e) => {
-            if (!props.draggablePieces || game.isGameOver()) {
-                e.preventDefault();
-                return;
+        
+        try {
+            if (board.value) {
+                board.value.setPosition(game.fen()); 
             }
-            if (props.side && game.turn() != props.side) {
-                e.preventDefault();
-                return;
-            }
-        });
+            emit('start', { timestamps: Date.now(), fen: game.fen()});
 
-        board.value.addEventListener('drop', (e) => {
-            const { source, target, setAction } = e.detail;
-            if (props.highlightLegalMoves) removeGreySquares();
-
-            try {
-                let move = { from: source, to: target, promotion: Pieces.TYPES.QUEEN } 
-                const result = game.move(move);
-                
-                emit('move', { 
-                    move: move, 
-                    fen: game.fen(),
-                    piece: result.piece,
-                    color: result.color,
-                    captured: result.captured,
-                    promotion: result.promotion,
-                    check: game.inCheck(),
-                    checkmate: game.isCheckmate(),
-                    castling: result.flags.includes('k') ? 'k' : result.flags.includes('q') ? 'q' : null
-                });
-            } catch {
-                setAction('snapback');
-            }
-        });
-
-        board.value.addEventListener('snap-end', () => {
-            board.value.setPosition(game.fen());
-            if (game.isGameOver()) {
-                emitGameOver(game)
-                return;
-            }
-
-            if (props.bot !== undefined && game.turn() !== props.side) {
-                setTimeout(() => {
-                    botMove(props.bot);
-                }, 500);
-            }
-        });
-
-        if (props.highlightLegalMoves) {
-            board.value.addEventListener('mouseover-square', (e) => {
-                const { square } = e.detail;
-                if (props.side && game.turn() !== props.side) return; // Only highlight on your turn
-
-                const moves = game.moves({ square, verbose: true });
-                if (moves.length === 0) return;
-
-                greySquare(square);
-                for (const move of moves) {
-                    greySquare(move.to);
+            board.value?.addEventListener('drag-start', (e) => {
+                if (!props.draggablePieces || game.isGameOver()) {
+                    e.preventDefault();
+                    return;
+                }
+                if (props.side && game.turn() != props.side) {
+                    e.preventDefault();
+                    return;
                 }
             });
 
-            board.value.addEventListener('mouseout-square', removeGreySquares);
+            board.value?.addEventListener('drop', (e) => {
+                const { source, target, setAction } = e.detail;
+                if (props.highlightLegalMoves) removeGreySquares();
+
+                try {
+                    let move = { from: source, to: target, promotion: Pieces.TYPES.QUEEN } 
+                    const result = game.move(move);
+                    
+                    emit('move', { 
+                        move: move, 
+                        fen: game.fen(),
+                        piece: result.piece,
+                        color: result.color,
+                        captured: result.captured,
+                        promotion: result.promotion,
+                        check: game.inCheck(),
+                        checkmate: game.isCheckmate(),
+                        castling: result.flags.includes('k') ? 'k' : result.flags.includes('q') ? 'q' : null
+                    });
+                } catch {
+                    setAction('snapback');
+                }
+            });
+
+            board.value?.addEventListener('snap-end', () => {
+                if (!board.value) return;
+                board.value.setPosition(game.fen());
+                if (game.isGameOver()) {
+                    emitGameOver(game)
+                    return;
+                }
+
+                if (props.bot !== undefined && game.turn() !== props.side) {
+                    botTimeout = setTimeout(() => {
+                        botMove(props.bot);
+                    }, 500);
+                }
+            });
+
+            if (props.highlightLegalMoves) {
+                board.value?.addEventListener('mouseover-square', (e) => {
+                    const { square } = e.detail;
+                    if (props.side && game.turn() !== props.side) return; // Only highlight on your turn
+
+                    const moves = game.moves({ square, verbose: true });
+                    if (moves.length === 0) return;
+
+                    greySquare(square);
+                    for (const move of moves) {
+                        greySquare(move.to);
+                    }
+                });
+
+                board.value?.addEventListener('mouseout-square', removeGreySquares);
+            }
+        } catch (e) {
+            console.error("Board Initialization Error:", e);
         }
+    });
+    
+    // Cleanup on unmount
+    import { onUnmounted } from 'vue';
+    onUnmounted(() => {
+        if (botTimeout) clearTimeout(botTimeout);
     });
 
     function botMove(level) {
+        if (!board.value) return; // Safety check
         try {
             let moveObj = aiMove(game.fen(), level);
             let [from, to] = Object.entries(moveObj)[0];
@@ -128,6 +145,7 @@
     }
 
     function playMove(from, to, promotion=null) {
+        if (!board.value) return; // Safety check
         try {
             const result = game.move({ from, to, promotion });
             board.value.setPosition(game.fen());

@@ -31,28 +31,38 @@
     const orientation = ref(null);
     const activePlayer = ref('w'); 
     
-    const whiteTime = ref(10 * 60 * 1000);
-    const blackTime = ref(10 * 60 * 1000);
+    // Time Control
+    const initialTime = history.state?.time || 10 * 60 * 1000;
+    const increment = history.state?.increment || 0;
+    
+    const whitePlayer = computed(() => {
+        if (!orientation.value || !profile.value) return { username: 'White', avatar: AnonymeIcon };
+        return orientation.value === 'white' ? profile.value : opponent.value;
+    });
+
+    const blackPlayer = computed(() => {
+        if (!orientation.value || !profile.value) return { username: 'Black', avatar: AnonymeIcon };
+        return orientation.value === 'white' ? opponent.value : profile.value;
+    });
+
+    const whiteTime = ref(initialTime);
+    const blackTime = ref(initialTime);
     const timerInterval = ref(null);
 
     const animation = ref(null);
     const winner = ref(null);
     const reason = ref(null);
-
-    const whitePlayer = computed(() => {
-        if (!orientation.value || !profile.value) return { pseudo: 'White', avatar: AnonymeIcon };
-        return orientation.value === 'white' ? profile.value : opponent.value;
-    });
-
-    const blackPlayer = computed(() => {
-        if (!orientation.value || !profile.value) return { pseudo: 'Black', avatar: AnonymeIcon };
-        return orientation.value === 'white' ? opponent.value : profile.value;
-    });
+    
+    // ... (computed props) ...
 
     onMounted(() => {
+        console.log('GameView Mounted');
+        console.log('Bot Level:', bot);
+        
         if (bot) {
-            opponent.value = new Profile(null, `Bot (level: ${bot})`, BotIcon)
-            profile.value = profileStore?.profile ?? new Profile(null, `Anonyme`, AnonymeIcon);
+            // Profile(id, username, email, avatar)
+            opponent.value = new Profile(null, `Bot (level: ${bot})`, null, BotIcon)
+            profile.value = profileStore?.profile ?? new Profile(null, `Anonyme`, null, AnonymeIcon);
             orientation.value = "white";
         }
         else {
@@ -73,44 +83,24 @@
             });
         }
         
+        console.log('Orientation:', orientation.value);
         side.value = orientation.value?.toLocaleLowerCase()?.charAt(0);
+        console.log('Side:', side.value);
+        
         animation.value = "versus"
         startTimer(); 
     });
 
-    onUnmounted(() => {
-        clearInterval(timerInterval.value);
-    });
-
-    // --- Navigation Logic ---
-
-    // Called when sidebar emits jump-to-move
-    function onJumpToMove(payload) {
-        if (payload.index === -1) {
-            // Jump to start
-            board.value?.resetToStart();
-        } else if (payload.fen) {
-            // Restore specific position
-            board.value?.restorePosition(payload.fen);
-        }
-    }
-
-    // Button Handlers
-    function goBack() {
-        sidebar.value?.goBack();
-    }
-
-    function goForward() {
-        sidebar.value?.goForward();
-    }
-
-    function goToEnd() {
-        sidebar.value?.goToEnd();
-    }
-
     function handleMove(moveData) {
         if (!bot && moveData.color === side.value) {
             socketStore.sendMove(moveData.move);
+        }
+
+        // Add increment to the player who just moved
+        if (moveData.color === 'w') {
+            whiteTime.value += increment;
+        } else {
+            blackTime.value += increment;
         }
 
         if (sidebar.value) {
