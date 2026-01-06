@@ -9,13 +9,14 @@ const props = defineProps({
     activePlayer: { type: String, default: null },
     whitePlayer: { type: Object, required: true },
     blackPlayer: { type: Object, required: true },
-    orientation: { type: String, default: 'white' }
+    orientation: { type: String, default: 'white' },
+    moveHistory: { type: Array, default: () => [] }
 });
 
 const emit = defineEmits(['jump-to-move']);
 
 // Move history
-const moves = ref([]);
+const moves = ref(props.moveHistory);
 const currentMoveIndex = ref(-1);
 const movesContainer = ref(null);
 
@@ -78,6 +79,10 @@ function generateNotation(move) {
 
 function jumpToMove(index) {
     currentMoveIndex.value = index;
+
+    if (index < -1 || index >= moves.value.length) {
+        return;
+    }
     
     // Handle jumping to start (index -1)
     if (index === -1) {
@@ -142,7 +147,13 @@ function clearHistory() {
     currentMoveIndex.value = -1;
 }
 
-defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward });
+function goToEnd() {
+    if (moves.value.length > 0) {
+        jumpToMove(moves.value.length - 1);
+    }
+}
+
+defineExpose({ addMove, clearHistory, jumpToMove, goBack, goForward, goToEnd });
 </script>
 
 <template>

@@ -104,6 +104,10 @@
         sidebar.value?.goForward();
     }
 
+    function goToEnd() {
+        sidebar.value?.goToEnd();
+    }
+
     function handleMove(moveData) {
         if (!bot && moveData.color === side.value) {
             socketStore.sendMove(moveData.move);
@@ -174,7 +178,7 @@
                     <BackwardIcon class="w-5 h-5" />
                 </button>
                 
-                <button class="btn btn-sm join-item">
+                <button class="btn btn-sm join-item" @click="goToEnd">
                     <BookOpenIcon class="w-5 h-5" />
                 </button>
                 
