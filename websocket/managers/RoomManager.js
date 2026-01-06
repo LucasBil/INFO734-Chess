@@ -6,7 +6,10 @@ const apiStore = new ApiStore();
 // We can log in the "system" user once the server starts or when needed.
 // Ideally, we shouldn't hardcode credentials here, but for this context:
 // Assuming 'dark' user exists as admin/system
-apiStore.login("dark", "dark").then(() => console.log("System logged into API"));
+apiStore.login("dark", "dark").then(() => {
+  console.log("System logged into API");
+  console.log(apiStore.token);
+});
 
 export class RoomManager {
   constructor() {

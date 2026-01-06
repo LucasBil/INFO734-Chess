@@ -16,7 +16,7 @@
 
   <!-- Content -->
   <div class="relative z-10 flex flex-col items-center justify-center gap-4 mt-10 text-white p-10 rounded-lg">
-    <h1 class="text-4xl font-bold mb-6 drop-shadow-lg">Welcome to Chess.com</h1>
+    <h1 class="text-4xl font-bold mb-6 drop-shadow-lg">Welcome to Checkmate.com</h1>
     <p class="text-lg mb-8 drop-shadow-md">Choose your battle mode:</p>
     <BotBattleButton />
     <OnlineBattleButton />

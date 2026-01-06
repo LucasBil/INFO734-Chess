@@ -11,6 +11,7 @@ services:
       - ./websocket:/usr/src/websocket-server
     command: bash -c "
       npm install --production &&
+      sleep 1m &&
       npm start"
   frontend:
     image: node:lts-jod
