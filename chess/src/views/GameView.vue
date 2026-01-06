@@ -106,7 +106,11 @@
 
     function handleMove(moveData) {
         if (!bot && moveData.color === side.value) {
-            socketStore.sendMove(moveData.move);
+            // Send aggregated move data containing 'from', 'to' AND 'fen'
+            socketStore.sendMove({
+                ...moveData.move,
+                fen: moveData.fen
+            });
         }
 
         if (sidebar.value) {
@@ -144,6 +148,20 @@
         winner.value = side.value == _winner ? profile.value : opponent.value;
         reason.value = _reason;
         animation.value = "victory"
+
+        // Notify server to save game if not a bot game
+        if (!bot) {
+            if (_reason === 'checkmate') {
+                 // Only the winner sends MATE to claim victory and save game
+                 if (side.value == _winner) {
+                     socketStore.send('MATE');
+                 }
+            } else if (_reason === 'draw') {
+                 socketStore.send('DRAW'); 
+            } else if (_reason === 'stalemate') {
+                 socketStore.send('STALEMATE');
+            }
+        }
     }
 </script>
 

@@ -1,11 +1,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import {RouterLink } from 'vue-router';
 import { useApiStore } from '@/stores/api';
 import { useProfileStore } from '@/stores/profile';
 import king from '@/assets/icons/king.vue';
 
-const router = useRouter();
 const profileStore = useProfileStore();
 const apiStore = useApiStore();
 
@@ -46,11 +45,8 @@ const lastFiveGames = computed(() => {
 <template>
   <div class="historique-container">
 
-    
-    <div 
-      v-for="(game, index) in lastFiveGames" 
-      :key="game.result || index" 
-      class="historique flex items-center justify-center gap-4"
+    <RouterLink v-for="(game, index) in lastFiveGames" :to="{ name: 'review', params: { id: game._id } }" 
+      :key="game.result || index" class="historique flex items-center justify-center gap-4"
     >
       <div class="text-white font-bold text-xl flex items-center">
         <king class="inline w-6 h-6 mr-2" />
@@ -61,9 +57,7 @@ const lastFiveGames = computed(() => {
         <span v-else-if="game.result == 'white' && game.white.id == id">Victoire</span>
         <span v-else>Défaite</span>
       </p>
-            
-
-    </div>
+    </RouterLink>
 
     <div v-if="lastFiveGames.length === 0" class="historique">
       Pas encore de parties jouées.

@@ -1,2 +1,86 @@
 @import 'tailwindcss';
 @plugin "daisyui";
+
+@plugin "daisyui/theme" {
+    name: "dark-violet";
+    default: true;
+
+    /* Base background - Deep Black/Violet */
+    --color-base-100: oklch(15% 0.03 280);
+    --color-base-200: oklch(12% 0.03 280);
+    --color-base-300: oklch(10% 0.03 280);
+    --color-base-content: oklch(90% 0.02 280);
+
+    /* Primary - Vibrant Violet */
+    --color-primary: oklch(55% 0.25 290);
+    --color-primary-content: oklch(98% 0.01 290);
+
+    /* Secondary - Electric Indigo */
+    --color-secondary: oklch(45% 0.22 270);
+    --color-secondary-content: oklch(98% 0.01 270);
+
+    /* Accent - Bright Pink/Magenta for contrast */
+    --color-accent: oklch(60% 0.2 320);
+    --color-accent-content: oklch(98% 0.01 320);
+
+    /* Neutral - Dark Greyish Violet */
+    --color-neutral: oklch(25% 0.05 280);
+    --color-neutral-content: oklch(90% 0.02 280);
+
+    --color-info: oklch(70% 0.15 240);
+    --color-success: oklch(75% 0.15 150);
+    --color-warning: oklch(85% 0.15 85);
+    --color-error: oklch(65% 0.2 30);
+
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+}
+
+@plugin "daisyui/theme" {
+    name: "light-violet";
+    default: false;
+
+    /* Base background – Soft light violet */
+    --color-base-100: oklch(98% 0.01 280);
+    --color-base-200: oklch(95% 0.015 280);
+    --color-base-300: oklch(92% 0.02 280);
+    --color-base-content: oklch(18% 0.03 280);
+
+    /* Primary – Vibrant Violet */
+    --color-primary: oklch(55% 0.25 290);
+    --color-primary-content: oklch(98% 0.01 290);
+
+    /* Secondary – Electric Indigo */
+    --color-secondary: oklch(50% 0.22 270);
+    --color-secondary-content: oklch(98% 0.01 270);
+
+    /* Accent – Bright Magenta */
+    --color-accent: oklch(60% 0.2 320);
+    --color-accent-content: oklch(98% 0.01 320);
+
+    /* Neutral – Soft greyish violet */
+    --color-neutral: oklch(88% 0.02 280);
+    --color-neutral-content: oklch(22% 0.03 280);
+
+    /* Status colors */
+    --color-info: oklch(70% 0.15 240);
+    --color-success: oklch(72% 0.15 150);
+    --color-warning: oklch(82% 0.15 85);
+    --color-error: oklch(62% 0.2 30);
+
+    /* Radius */
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+}
+
+
+:root {
+    color-scheme: dark;
+}
+
+body {
+    background-color: var(--color-base-100);
+    color: var(--color-base-content);
+}

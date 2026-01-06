@@ -46,6 +46,22 @@ function handleMessage(player, message) {
       roomManager.broadcastChat(player, message.data);
       break;
 
+    case 'MATE':
+      roomManager.broadcastMate(player);
+      break;
+
+    case 'STALEMATE':
+      roomManager.broadcastStalemate(player);
+      break;
+
+    case 'DRAW':
+      roomManager.broadcastDraw(player);
+      break;
+
+    case 'RESIGN':
+      roomManager.broadcastResign(player);
+      break;
+
     default:
       console.log(`❓ Unknown message type: ${message.type}`);
   }

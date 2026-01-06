@@ -2,13 +2,11 @@
   import OnlineBattleButton from '@/components/OnlineBattleButton.vue';
   import BotBattleButton from '@/components/BotBattleButton.vue';
   import HistoriqueComponent from '@/components/HistoriqueComponent.vue';
-
-
 </script>
 
 <template>
   <!-- Video Background -->
-  <video autoplay muted loop playsinline class="fixed top-0 left-0 w-full h-full object-cover -z-20 bg-black grayscale">
+  <video autoplay muted loop playsinline class="fixed top-0 left-0 w-full h-full object-cover -z-1 bg-black grayscale">
     <source src="/chess-dark-loop.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
