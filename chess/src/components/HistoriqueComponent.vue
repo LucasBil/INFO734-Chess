@@ -1,11 +1,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import {RouterLink } from 'vue-router';
 import { useApiStore } from '@/stores/api';
 import { useProfileStore } from '@/stores/profile';
 import king from '@/assets/icons/king.vue';
 
-const router = useRouter();
 const profileStore = useProfileStore();
 const apiStore = useApiStore();
 
@@ -17,9 +16,9 @@ const fetchGames = async () => {
   
   if (id) {
     try {
-      console.log("Fetching games for email:", id);
+      //console.log("Fetching games for email:", id);
       const gamesFromApi = await apiStore.fetchUserGames(id);
-      console.log("Result:", gamesFromApi);
+      //console.log("Result:", gamesFromApi);
       
       if (Array.isArray(gamesFromApi)) {
         rawGames.value = gamesFromApi;
@@ -37,7 +36,7 @@ onMounted(() => {
 //Computed pour obtenir les 5 DERNIERS éléments
 const lastFiveGames = computed(() => {
   // slice(-5) prend les 5 derniers éléments du tableau
-  // reverse() les inverse pour afficher le plus récent tout en haut (optionnel)
+  // reverse() les inverse pour afficher le plus récent tout en haut
   return rawGames.value.slice(-5).reverse();
 });
 
@@ -46,24 +45,20 @@ const lastFiveGames = computed(() => {
 <template>
   <div class="historique-container">
 
-    
-    <div 
-      v-for="(game, index) in lastFiveGames" 
-      :key="game.result || index" 
-      class="historique flex items-center justify-center gap-4"
+    <RouterLink v-for="(game, index) in lastFiveGames" :to="{ name: 'review', params: { id: game._id } }" 
+      :key="game.result || index" class="historique flex items-center justify-center gap-4"
     >
       <div class="text-white font-bold text-xl flex items-center">
         <king class="inline w-6 h-6 mr-2" />
       </div>
       <p class="grow">
-        Game {{ index + 1 }} | 
+        <span v-if="game.moves && game.moves.length > 0 && game.moves[0].date">Game du {{ new Date(game.moves[0].date).toLocaleDateString('fr-FR') }} | </span>
+        <span v-else>Game {{ index + 1 }} | </span>
         <span v-if="game.result == 'black' && game.black.id == id">Victoire</span>
         <span v-else-if="game.result == 'white' && game.white.id == id">Victoire</span>
         <span v-else>Défaite</span>
       </p>
-            
-
-    </div>
+    </RouterLink>
 
     <div v-if="lastFiveGames.length === 0" class="historique">
       Pas encore de parties jouées.

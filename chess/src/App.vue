@@ -7,9 +7,11 @@
 </script>
 
 <template>
-  <HeaderComponent />
-  <main class="grow flex flex-col bg-[#1A1818]">
-    <RouterView />
-  </main>
-  <FooterComponent v-if="route.name !== 'game'" />
+  <div class="min-h-screen flex flex-col" :class="route.name === 'home' ? '' : 'bg-base-100 text-base-content'">
+    <HeaderComponent />
+    <main class="grow flex flex-col">
+      <RouterView />
+    </main>
+    <FooterComponent v-if="route.name !== 'game'" />
+  </div>
 </template>

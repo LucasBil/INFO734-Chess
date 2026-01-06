@@ -4,16 +4,16 @@ import Profile from '@/models/Profile'
 export const useSocketStore = defineStore('socket', {
     state: () => {
         return {
-            socket : null,
-            isConnected : false,
-            roomId : null,
-            playerId : null,
-            opponent : null,
-            color : null,
+            socket: null,
+            isConnected: false,
+            roomId: null,
+            playerId: null,
+            opponent: null,
+            color: null,
             listeners: {}
         }
     },
-    actions : {
+    actions: {
         on(event, callback) {
             this.listeners[event] = callback
         },
@@ -63,9 +63,11 @@ export const useSocketStore = defineStore('socket', {
                     break
 
                 case 'MATCH_FOUND':
+                    console.log("MATCH_FOUND");
+                    console.log(msg.data);
                     this.opponent = {
-                        'id' : msg.data.opponent.id,
-                        'profile' : Profile.loadJSONModel(msg.data.opponent.profile),
+                        'id': msg.data.opponent.id,
+                        'profile': Profile.loadJSONModel(msg.data.opponent.profile),
                     };
                     this.color = msg.data.color;
                     this.roomId = msg.data.roomId;
@@ -90,6 +92,7 @@ export const useSocketStore = defineStore('socket', {
             this.send('CHAT', text)
         },
         sendMove(move) {
+            console.log(move);
             this.send('MOVE', move)
         },
         findGame(options = {}) {

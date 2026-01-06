@@ -35,6 +35,11 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/review/:id',
+      name: 'review',
+      component: () => import('../views/GameReviewView.vue'),
+    },
+    {
       path: '/game/bot/:level(\\d{1})', // level [0,4]
       name: 'bot-game',
       component: () => import('../views/GameView.vue'),
