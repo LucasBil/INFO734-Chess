@@ -37,56 +37,32 @@
     const whiteTime = ref(0);
     const blackTime = ref(0);
     const activePlayer = ref('w'); 
+    const moveHistory = ref([]);
 
     // Auto-play state
     const isPlaying = ref(false);
     let playInterval = null;
 
-    function replayMoves(moves) {
-        console.log("Replaying moves...", moves.length);
-        if (!sidebar.value) {
-            console.warn("Sidebar not ready yet in replayMoves");
-            return;
-        }
-         
-         game.reset();
-         // Clear existing history first to avoid duplicates if re-run
-         sidebar.value.clearHistory();
 
-        for (const moveData of moves) {
-            try {
-                let moveResult;
-                if (typeof moveData === 'string') {
-                    moveResult = game.move(moveData); 
-                } else if (moveData.from && moveData.to) {
-                    moveResult = game.move({
-                        from: moveData.from,
-                        to: moveData.to,
-                        promotion: moveData.promotion || Pieces.TYPES.QUEEN 
-                    });
-                }
-                
-                if (moveResult) {
-                    sidebar.value.addMove({
-                        from: moveResult.from,
-                        to: moveResult.to,
-                        piece: moveResult.piece,
-                        color: moveResult.color,
-                        captured: moveResult.captured,
-                        promotion: moveResult.promotion,
-                        check: game.inCheck(),
-                        checkmate: game.isCheckmate(),
-                        castling: moveResult.flags.includes('k') ? 'k' : moveResult.flags.includes('q') ? 'q' : null,
-                        fen: game.fen()
-                    });
-                }
-            } catch(e) {
-                    console.error("Error replaying move", moveData, e);
+    
+    function findMoveBetweenFens(fenBefore, fenAfter) {
+        const chess = new Chess(fenBefore);
+        const moves = chess.moves({ verbose: true });
+
+        for (const move of moves) {
+            const clone = new Chess(fenBefore);
+            clone.move(move);
+
+            if (clone.fen() === fenAfter) {
+                return {
+                    san: move.san,
+                    uci: move.from + move.to + (move.promotion ?? ""),
+                    move
+                };
             }
         }
-        
-        // Default to start of the game
-        sidebar.value.jumpToMove(-1);
+
+        return null;
     }
 
     onMounted(async () => {
@@ -140,16 +116,14 @@
         // Replay moves into Sidebar
         // We use a watcher because Sidebar renders conditionally (v-if) based on players being loaded
         
-        watch(sidebar, (newVal) => {
-            console.log("Sidebar watcher fired. New Val:", !!newVal);
-            if (newVal && fetchedGame.moves && Array.isArray(fetchedGame.moves)) {
-                 replayMoves(fetchedGame.moves);
-            }
-        });
 
-        // In case it's already there (rare but possible if cached/fast)
-        if (sidebar.value && fetchedGame.moves && Array.isArray(fetchedGame.moves)) {
-             replayMoves(fetchedGame.moves);
+        const moves = [
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            ...fetchedGame.moves.map(m => m.fen)
+        ]
+        for (let i = 0; i < moves.length - 1; i++) {
+            let detail = findMoveBetweenFens(moves[i], moves[i+1]);
+            moveHistory.value.push({ fen: moves[i+1], notation: detail.san});
         }
     });
 
@@ -264,6 +238,7 @@
                 :white-player="whitePlayer"
                 :black-player="blackPlayer"
                 :orientation="orientation"
+                :move-history="moveHistory"
                 @jump-to-move="onJumpToMove"
             />
              <div v-else class="flex items-center justify-center h-full">
