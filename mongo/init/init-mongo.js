@@ -35,6 +35,20 @@ db.createUser({
 db.createCollection('users');
 db.createCollection('games');
 
+try {
+  db.users.insertOne({
+    username: "dark",
+    email: "dark@admin.local",
+    password: "$2b$10$lWzEaCNZc5KJOol77.P8WetTDctDpxdvO.rDEWND6rXoHvoT0t28O", // dark
+    role: "admin",
+    avatarUrl: null,
+    refreshTokens: [],
+    createdAt: new Date()
+  });
+} catch (error) {
+  print('Error creating initial admin user: ' + error);
+}
+
 print('=== Database initialized successfully ===');
 print('Database: ' + databaseName);
 print('User: ' + process.env.MONGO_INITDB_ROOT_USERNAME);
